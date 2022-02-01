@@ -5,41 +5,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Lang;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 
 abstract class AbstractController extends Controller
 {
-	public function sendMail(array $user, string $header, string $content)
-	{
-		Mail::raw($content, function ($message) use ($user, $header) {
-			$message->from(env("MAIL_USERNAME"), env("MAIL_FULLNAME"));
-			$message->to(data_get($user, "email"), data_get($user, "name") . ' ' . data_get($user, "surname"));
-			$message->subject($header);
-		});
-	}
-	public function sendSMS(array $user, string $content)
-	{
-		$verimor = new \Novadan\Verimor\ServiceType\Verimor(
-			env("VERIMOR_USERNAME"),
-			env("VERIMOR_PASSWORD"),
-			env("VERIMOR_SOURCE_ADDR")
-		);
-		$data = new \Novadan\Verimor\StructType\Send(
-			null,
-			null,
-			null,
-			null,
-			[
-				new \Novadan\Verimor\StructType\Message(
-					$content,
-					data_get($user, "mobile")
-				)
-			]
-		);
-		$verimor->Send($data);
-	}
-
 	public function redirectBackForFormCheck($backUrl, $withData)
 	{
 
